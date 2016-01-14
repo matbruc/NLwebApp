@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    div.container
+        header
+            h1 Newsletter Web App
+        section
+            div.contenedorinfo
+                div.info
+                    h1 Prueba
+                    span &nbsp;
+                    form(role="form", action="/upload/file", method="post", enctype="multipart/form-data", class="form-inline")
+                        p
+                            label 
+                                span(class='btn btn-success btn-file') Seleccionar archivo
+                                    input(type="file", name="file")
+                            label
+                                input(type='submit', class="btn btn-default", value='Submit', data-transition='fade', data-theme='c')
+
