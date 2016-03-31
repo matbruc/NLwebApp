@@ -1,8 +1,7 @@
 0 info it worked if it ends with ok
 1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
 1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
-1 verbose cli   'start',
-1 verbose cli   '--debug=on' ]
+1 verbose cli   'start' ]
 2 info using npm@2.14.7
 3 info using node@v4.2.2
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
@@ -23,7 +22,7 @@
 10 verbose pkgid NLwebApp@0.0.0
 11 verbose cwd C:\Franco\www\NLwebApp
 12 error Windows_NT 6.3.9600
-13 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "start" "--debug=on"
+13 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "start"
 14 error node v4.2.2
 15 error npm  v2.14.7
 16 error code ELIFECYCLE

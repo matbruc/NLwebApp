@@ -77,9 +77,9 @@ app.post('/upload/file', upload.single('file'), function(req, res) {
                 emailsOK.push(emails);
                 var messageFront = "El email " + emails + " fué suscripto correctamente" + emailsOK[0];
                 res.render('file-uploaded', {
-            message1: "Estos OK " + emailsOK[0]
-            
-        });
+                    message1: "Estos OK " + emailsOK[0]
+
+                });
             } else if (res.statusCode == 409) {
                 emailsRepetidos.push(emails);
                 var messageFront = "El email " + emails + " ya se encuentra suscripto";
@@ -94,15 +94,16 @@ app.post('/upload/file', upload.single('file'), function(req, res) {
         });
         post_req.write(post_data);
         post_req.end();
+
+        res.render('file-uploaded', {
+            message1: "Estos OK " + emailsOK, // + emailsOK[0],
+            message2: "Estos Repetidos " + emailsRepetidos, //+ emailsRepetidos[0],
+            message3: "Estos Error " + emailsError // + emailsError[0]
+        });
+
     });
 
-    reader.addListener('end', function(emailsOK) {
-        res.render('file-uploaded', {
-            message1: "Estos OK ",// + emailsOK[0],
-            message2: "Estos Repetidos " ,//+ emailsRepetidos[0],
-            message3: "Estos Error "// + emailsError[0]
-        });
-    });
+
 });
 
 //catch 404 and forward to error handler
