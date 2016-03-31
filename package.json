@@ -16,6 +16,9 @@
     "stylus": "*",
     "ya-csv": "*",
     "multer": "*",
-    "iconv-lite": "*"
+    "iconv-lite": "*",
+    "nodemon": "*",
+    "querystring": "*",
+    "http-debug": "*"
   }
 }

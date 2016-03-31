@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -12,6 +13,11 @@ var upload = multer({
     dest: 'uploads/'
 });
 var iconv = require('iconv-lite');
+var post = require('./post/post.js');
+var request = require('request');
+var querystring = require('querystring');
+var https = require('http-debug').https
+https.debug = 0;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,31 +36,76 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
 app.post('/upload/file', upload.single('file'), function(req, res) {
+    var emailsOK = [];
+    var emailsRepetidos = [];
+    var emailsError = [];
     console.log(req.file);
     console.log('File name is ' + req.file.name);
     console.log('File size is ' + req.file.size);
     console.log('File path is ' + req.file.path);
     var reader = csv.createCsvFileReader(req.file.path, {
-        'separator': '\t',
-        'quote': '"',
-        'escape': '"',
-        'comment': ''
-    });
-    reader.addListener('data', function(data) {
-        var dataConverted = iconv.decode(data, 'utf8');
-        console.log(dataConverted);
+        separator: '\t',
+        quote: '"',
+        escape: '"',
+        comment: '',
+        columns: true,
+        comment: '#',
     });
 
-    reader.addListener('end', function() {
+    reader.addListener('data', function(data) {
+        var dataConverted = iconv.decode(data, 'utf8');
+        var dataConvertedSplitted = dataConverted.split(',');
+        console.log(dataConvertedSplitted[6]);
+        var emails = encodeURIComponent(dataConvertedSplitted[6]);
+        console.log(emails);
+        var post_data = 'email=' + emails;
+
+        // An object of options to indicate where to post to
+        var post_options = {
+            host: "www.avenida.com.ar",
+            path: "/api/user/newsletter",
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        };
+        // Set up the request
+        var post_req = https.request(post_options, function(res) {
+            res.setEncoding('utf8');
+            console.log('statusCode: ', res.statusCode);
+            if (res.statusCode == 200) {
+                emailsOK.push(emails);
+                var messageFront = "El email " + emails + " fué suscripto correctamente" + emailsOK[0];
+                res.render('file-uploaded', {
+            message1: "Estos OK " + emailsOK[0]
+            
+        });
+            } else if (res.statusCode == 409) {
+                emailsRepetidos.push(emails);
+                var messageFront = "El email " + emails + " ya se encuentra suscripto";
+            } else if (res.statusCode == 500) {
+                emailsError.push(emails);
+                var messageFront = "El email " + emails + " tiene un error";
+            }
+            console.log(messageFront);
+            res.on('data', function(chunk) {
+                console.log('Response: ' + chunk);
+            });
+        });
+        post_req.write(post_data);
+        post_req.end();
+    });
+
+    reader.addListener('end', function(emailsOK) {
         res.render('file-uploaded', {
-            message: "Successfully consumed the CSV file"
+            message1: "Estos OK ",// + emailsOK[0],
+            message2: "Estos Repetidos " ,//+ emailsRepetidos[0],
+            message3: "Estos Error "// + emailsError[0]
         });
     });
 });
 
-
-
-// catch 404 and forward to error handler
+//catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
@@ -84,7 +135,6 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 
 module.exports = app;
