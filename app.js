@@ -97,7 +97,7 @@ app.post('/upload/file', upload.single('file'), function(req, res) {
     });
 
     reader.addListener('end', function(emailsOK) {
-        res.render('file-uploaded', {
+        res.locals('file-uploaded', {
             message1: "Estos OK ",// + emailsOK[0],
             message2: "Estos Repetidos " ,//+ emailsRepetidos[0],
             message3: "Estos Error "// + emailsError[0]
