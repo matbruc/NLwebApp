@@ -1,31 +1,7 @@
-/*
-var form = document.forms['fileUpload'];
-var flash = document.getElementById('flash'),
-  progressBar = document.getElementById('progressBar');
-form.addEventListener('submit', function(e){
-  e.preventDefault();
-  if(document.getElementById('fileUploadInput').value){
-    var data = new FormData(form);
-    var req = new XMLHttpRequest();
-    req.onload = function(e) {
-      var response = e.target.response;
-      document.getElementById('progressCont').style.display ='block';
-      flash.innerHTML = '<p class="bg-info text-info">' + response + '</p>';
-    }
-    req.open('POST', form.action, true);
-    req.send(data);
-  } else {
-    flash.innerHTML = '<p class="bg-error text-error">Llena el formulario</p>';
-  }
-
-});
-
-*/
-
 var app = angular.module('nlApp', []);
 
 app.factory('socket', function($rootScope) {
-  var socket = io.connect('http://localhost:3001');
+  var socket = io.connect();
   return {
     on: function(eventName, callback) {
       socket.on(eventName, function() {

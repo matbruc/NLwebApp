@@ -5,16 +5,26 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var app = express();
+var server = require('http').createServer(app);
+var port = process.env.PORT || '3000';
+server.listen(port);
 var multer = require('multer');
 var upload = multer({
   dest: 'uploads'
 });
-var io = require('socket.io')(3001);
+
+var io = require('socket.io').listen(server);
+
 var csv = require('ya-csv');
 var iconv = require('iconv-lite');
 var https = require('http-debug').https
 https.debug = 0;
 var _ = require('underscore');
+
+var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000
+app.listen(port, function() {
+  console.log("Express server listening on port %d in %s mode", server.address().port, app.settings.env);
+});
 
 
 var csvResponse = [];
