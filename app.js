@@ -42,20 +42,12 @@ app.get('/', function(req, res) {
 
 
 app.post('/upload', upload.single('file'), function(req, res) {
-  var reader = csv.createCsvFileReader(req.file.path, {
-    separator: '\t',
-    quote: '"',
-    escape: '"',
-    columns: true,
-    comment: '#',
-  });
-
+  var reader = csv.createCsvFileReader(req.file.path);
 
   reader.addListener('data', function(data) {
-    var dataConverted = iconv.decode(data, 'utf8');
-    var dataConvertedSplitted = dataConverted.split(',');
-    var emails = encodeURIComponent(dataConvertedSplitted[6]);
+    var emails = encodeURIComponent(data);
     var post_data = 'email=' + emails;
+    console.log(emails);
     var emailState = {
       status: '',
       email: ''
