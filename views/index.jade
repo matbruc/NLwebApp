@@ -1,19 +1,59 @@
 extends layout
 
 block content
-    div.container
-        header
-            h1 Newsletter Web App
-        section
-            div.contenedorinfo
-                div.info
-                    h1 Prueba
-                    span &nbsp;
-                    form(role="form", action="/upload/file", method="post", enctype="multipart/form-data", class="form-inline")
-                        p
-                            label 
-                                span(class='btn btn-success btn-file') Seleccionar archivo
-                                    input(type="file", name="file")
-                            label
-                                input(type='submit', class="btn btn-default", value='Submit', data-transition='fade', data-theme='c')
+  div.container
+    header
+      h1 Newsletter Web App
+    section
+      div.contenedorinfo
+        div.info
+          form(role="form", action="/upload", method="post", 
+          enctype="multipart/form-data", class="form-inline", name="fileUpload")
+            p
+              label Seleccionar archivo
+            p
+              input(type="file", name="file", id="fileUploadInput")
+            p
+              label
+                input(type='submit', class="btn btn-default", value='Submit', 
+                data-transition='fade', data-theme='c')
+          #flash
+          #board
 
+  script(src="https://cdn.socket.io/socket.io-1.4.5.js")
+  script.
+    var form = document.forms['fileUpload'];
+    var flash = document.getElementById('flash');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(document.getElementById('fileUploadInput').value){
+        var data = new FormData(form);
+        var req = new XMLHttpRequest();
+        req.onload = function(e) {
+          var response = e.target.response;
+          flash.innerHTML = response;
+        }
+        req.open('POST', form.action, true);
+        req.send(data);
+      } else {
+        flash.innerHTML = '<p class="error">Llena el formulario</p>';
+      }
+
+    });
+    var socket = io.connect('http://localhost:3001');
+      socket.on('csvResponse', function (data) {
+        updateTable(data)
+      });
+
+      socket.on('csvParsed', (data)=>{
+        console.log('parsed');
+      });
+
+    function updateTable(data) {
+      var html = '<table class="table"><tr><th>Email</th><th>Status</th></tr>';
+      data.forEach(function (el) {
+        html += '<tr><td>' + el.email + '</td><td>' + el.status + '</td></tr>';
+      })
+      html += '</table>';
+      document.getElementById('board').innerHTML = html;
+    }
