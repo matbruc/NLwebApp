@@ -3,57 +3,40 @@ extends layout
 block content
   div.container
     header
-      h1 Newsletter Web App
-    section
+      h1=title
+    section(ng-app="nlApp")
       div.contenedorinfo
-        div.info
-          form(role="form", action="/upload", method="post", 
-          enctype="multipart/form-data", class="form-inline", name="fileUpload")
+        div.info(ng-controller='tableCtrl')
+          form#fileForm(role="form", ng-submit="processForm()"
+          enctype="multipart/form-data", class="form-inline")
             p
               label Seleccionar archivo
             p
-              input(type="file", name="file", id="fileUploadInput")
+              input(type="file", name="file", id="fileUploadInput" file-model="myFile")
             p
               label
                 input(type='submit', class="btn btn-default", value='Submit', 
                 data-transition='fade', data-theme='c')
-          #flash
-          #board
+
+          #progressCont.progress(ng-if="progress>0")
+            #progressBar.progress-bar.progress-bar-success(role="progressbar" 
+            aria-valuenow="{{progressString}}" aria-valuemin="0" 
+            aria-valuemax="100" style="width:{{progressString}}")
+          #flash(ng-if="flash")
+            p(class="{{flash.classes}}") {{flash.text}}
+          #test
+            input.form-control(type="text" ng-model="search.$" placeholder="Buscar")
+            table.table(ng-if="tableData.length>0")
+              thead
+                tr
+                  th Email
+                  th Status
+              tbody
+                tr(ng-repeat="td in tableData|filter:search")
+                  td {{td.email}}
+                  td {{td.status}}
 
   script(src="https://cdn.socket.io/socket.io-1.4.5.js")
-  script.
-    var form = document.forms['fileUpload'];
-    var flash = document.getElementById('flash');
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-      if(document.getElementById('fileUploadInput').value){
-        var data = new FormData(form);
-        var req = new XMLHttpRequest();
-        req.onload = function(e) {
-          var response = e.target.response;
-          flash.innerHTML = response;
-        }
-        req.open('POST', form.action, true);
-        req.send(data);
-      } else {
-        flash.innerHTML = '<p class="error">Llena el formulario</p>';
-      }
-
-    });
-    var socket = io.connect('http://localhost:3001');
-      socket.on('csvResponse', function (data) {
-        updateTable(data)
-      });
-
-      socket.on('csvParsed', (data)=>{
-        console.log('parsed');
-      });
-
-    function updateTable(data) {
-      var html = '<table class="table"><tr><th>Email</th><th>Status</th></tr>';
-      data.forEach(function (el) {
-        html += '<tr><td>' + el.email + '</td><td>' + el.status + '</td></tr>';
-      })
-      html += '</table>';
-      document.getElementById('board').innerHTML = html;
-    }
+  script(src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js")
+  script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js")
+  script(src="js/main.js")
